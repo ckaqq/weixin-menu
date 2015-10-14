@@ -14,6 +14,13 @@
       <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
     <style type="text/css">
+        .center{
+            text-align: center;
+            vertical-align: middle!important;
+        }
+        a:link,a:visited,a:hover,a:active {
+            text-decoration: none;
+        }
         .list-group {
             margin-top: 10px;
         }
@@ -43,6 +50,93 @@
             margin-left: 10px;
             float: right;
         }
+        .preview {
+            width: 362px;
+            height: 642px;
+            position: relative;
+            background: url(static/img/preview-background.png) 0 0 no-repeat;
+        }
+        .preview-title {
+            margin-top: 10px;
+            padding-top: 10px;
+        }
+        .preview-menu {
+            position: absolute;
+            height: 40px;
+            bottom: 81px;
+            right: 22px;
+            width: 272px;
+        }
+        .preview-menu-one {
+            width: 32%;
+            position: relative;
+            text-align: center;
+            cursor: pointer;
+            border-left: 1px solid #ccc;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            float: left;
+            height: 32px;
+            padding-top: 8px;
+        }
+        .preview-menu-two {
+            position: absolute;
+            min-width: 140px;
+            left: 50%;
+            margin-left: -70px;
+            bottom: 50px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            background-color: #f1f1f1;
+            text-align: center;
+        }
+        .preview-menu-click {
+            display: block;
+            color: #242424;
+            padding: 6px 10px;
+            border-top: 1px solid #ccc;
+            cursor: pointer;
+        }
+        .preview-menu-float-1 {
+            left: 35px;
+        }
+        .preview-menu-float-2 {
+            left: 128px;
+        }
+        .preview-menu-float-3 {
+            left: 200px;
+        }
+        .custom_menu_arrow {
+    display: inline-block;
+    position: absolute;
+    bottom: -5px;
+    height: 5px;
+    width: 10px;
+    left: 50%;
+    margin-left: -5px;
+    vertical-align: middle;
+}
+.custom_menu_down {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-color: #ccc transparent transparent;
+    border-width: 5px 5px 0;
+    left: 0;
+    bottom: 0;
+}
+.custom_menu_up {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-color: #f1f1f1 transparent transparent;
+    border-width: 5px 5px 0;
+    left: 0;
+    bottom: 1px;
+}
     </style>
 </head>
 <body>
@@ -55,7 +149,7 @@
 </nav>
     <div class="container">
         <div class="row">
-            <div class="col-xs-12">
+            <div class="col-xs-12 col-sm-7">
                 <ul class="list-group">
                     <li class="list-group-item">
                         <span class="glyphicon glyphicon-triangle-bottom icon-head"></span>
@@ -136,10 +230,47 @@
                         </span>
                     </li>
                 </ul>
-            </div>
-            <div class="col-xs-12">
                 <button type="button" class="btn btn-primary" disabled="disabled">保存</button>
                 <button type="button" class="btn btn-primary">发布</button>
+            </div>
+
+            <div class="col-xs-12 col-sm-5 hidden-xs">
+                <div class="preview">
+                    <div class="center preview-title">预览</div>
+                    <div class="preview-menu">
+                        <div class="preview-menu-two preview-menu-float-1">
+                            <a class="preview-menu-click">二级菜单1-1</a>
+                            <a class="preview-menu-click">二级菜单1-2</a>
+                            <a class="preview-menu-click">二级菜单1-3</a>
+                            <span class="custom_menu_arrow">
+                                <span class="custom_menu_down"></span>
+                                <span class="custom_menu_up"></span>
+                            </span>
+                        </div>
+                        <div class="preview-menu-one">
+                            <span class="glyphicon glyphicon-menu-hamburger"></span>
+                            一级菜单1
+                        </div>
+
+                        <div class="preview-menu-one">
+                            一级菜单2
+                        </div>
+
+                        <div class="preview-menu-two preview-menu-float-3">
+                            <a class="preview-menu-click">二级菜单3-1</a>
+                            <a class="preview-menu-click">二级菜单3-2</a>
+                            <span class="custom_menu_arrow">
+                                <span class="custom_menu_down"></span>
+                                <span class="custom_menu_up"></span>
+                            </span>
+                        </div>
+                        <div class="preview-menu-one">
+                            <span class="glyphicon glyphicon-menu-hamburger"></span>
+                            一级菜单3
+                        </div>
+
+                    </div>
+                </div>
             </div>
         </div>
     </div>
