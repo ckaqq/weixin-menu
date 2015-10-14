@@ -1,0 +1,123 @@
+.center{
+    text-align: center;
+    vertical-align: middle!important;
+}
+a:link,a:visited,a:hover,a:active {
+    text-decoration: none;
+}
+.list-group {
+    margin-top: 10px;
+}
+.menu-one {
+    margin-left: 6px;
+}
+.menu-two {
+    margin-left: 20px;
+}
+.btn-right {
+    float: right;
+    margin-top: 7px;
+    margin-left: 10px;
+    width: 54px;
+}
+.clarity {
+    margin-left: 5px;
+    opacity: 0;
+}
+.list-group-item:hover {
+    background-color: #eee;
+}
+.list-group-item:hover .clarity{
+    opacity: 1;
+}
+.trash {
+    margin-left: 10px;
+    float: right;
+}
+.preview {
+    width: 362px;
+    height: 642px;
+    position: relative;
+    background: url(../img/preview-background.png) 0 0 no-repeat;
+}
+.preview-title {
+    margin-top: 10px;
+    padding-top: 10px;
+}
+.preview-menu {
+    position: absolute;
+    height: 40px;
+    bottom: 81px;
+    right: 22px;
+    width: 272px;
+}
+.preview-menu-one {
+    width: 32%;
+    position: relative;
+    text-align: center;
+    cursor: pointer;
+    border-left: 1px solid #ccc;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    float: left;
+    height: 32px;
+    padding-top: 8px;
+}
+.preview-menu-two {
+    position: absolute;
+    min-width: 140px;
+    left: 50%;
+    margin-left: -70px;
+    bottom: 50px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    background-color: #f1f1f1;
+    text-align: center;
+}
+.preview-menu-click {
+    display: block;
+    color: #242424;
+    padding: 6px 10px;
+    border-top: 1px solid #ccc;
+    cursor: pointer;
+}
+.preview-menu-float-1 {
+    left: 35px;
+}
+.preview-menu-float-2 {
+    left: 128px;
+}
+.preview-menu-float-3 {
+    left: 200px;
+}
+.custom_menu_arrow {
+    display: inline-block;
+    position: absolute;
+    bottom: -5px;
+    height: 5px;
+    width: 10px;
+    left: 50%;
+    margin-left: -5px;
+    vertical-align: middle;
+}
+.custom_menu_down {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-color: #ccc transparent transparent;
+    border-width: 5px 5px 0;
+    left: 0;
+    bottom: 0;
+}
+.custom_menu_up {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-color: #f1f1f1 transparent transparent;
+    border-width: 5px 5px 0;
+    left: 0;
+    bottom: 1px;
+}
