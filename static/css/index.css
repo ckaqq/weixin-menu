@@ -8,10 +8,13 @@ a:link,a:visited,a:hover,a:active {
 .list-group {
     margin-top: 10px;
 }
-.menu-one {
+.menu-1 {
     margin-left: 6px;
 }
-.menu-two {
+.menu-2 {
+    margin-left: 20px;
+}
+.menu-3 {
     margin-left: 20px;
 }
 .btn-right {

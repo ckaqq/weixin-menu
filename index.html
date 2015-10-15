@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN" ng-app="weixin_menu">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>自定义菜单</title>
+    <link href="static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="static/css/index.css" rel="stylesheet">
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="//cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style type="text/css">
+        .menu-input {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-default">
+      <div class="container">
+            <a class="navbar-brand" href="#">自定义菜单</a>
+            <button type="button" class="btn btn-default btn-right">排序</button>
+            <button type="button" class="btn btn-default btn-right">+</button>
+      </div><!-- /.container-fluid -->
+    </nav>
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-7" ng-controller="menu">
+                <ul class="list-group">
+                    <li class="list-group-item" ng-repeat="list in lists">
+                        <span class="glyphicon glyphicon-triangle-bottom icon-head" ng-if="list.rank == 1"></span>
+                        <span class="menu-{{list.rank}}">
+                            <span class="glyphicon glyphicon-plus" ng-if="list.rank == 3"></span>
+                            <span ng-bind="list.name"></span>
+                            <input class="menu-input" type="text" autofocus="true" value="{{list.name}}" ng-blur="">
+                            <span class="glyphicon glyphicon-pencil clarity" ng-if="list.rank != 3"></span>
+                            <span class="glyphicon glyphicon-trash clarity trash" ng-if="list.rank != 3" ng-click="del()"></span>
+                            <span class="label label-default trash" ng-if="list.type" ng-bind="typeArray[list.type]"></span>
+                        </span>
+                    </li>
+                </ul>
+                <button type="button" class="btn btn-primary" disabled="disabled">保存</button>
+                <button type="button" class="btn btn-primary">发布</button>
+            </div>
+
+            <div class="col-xs-12 col-sm-5 hidden-xs" ng-controller="preview">
+                <div class="preview">
+                    <div class="center preview-title">预览</div>
+                    <div class="preview-menu">
+                        <div class="preview-menu-two preview-menu-float-1">
+                            <a class="preview-menu-click">二级菜单1-1</a>
+                            <a class="preview-menu-click">二级菜单1-2</a>
+                            <a class="preview-menu-click">二级菜单1-3</a>
+                            <span class="custom_menu_arrow">
+                                <span class="custom_menu_down"></span>
+                                <span class="custom_menu_up"></span>
+                            </span>
+                        </div>
+                        <div class="preview-menu-one">
+                            <span class="glyphicon glyphicon-menu-hamburger"></span>
+                            一级菜单1
+                        </div>
+
+                        <div class="preview-menu-one">
+                            一级菜单2
+                        </div>
+
+                        <div class="preview-menu-two preview-menu-float-3">
+                            <a class="preview-menu-click">二级菜单3-1</a>
+                            <a class="preview-menu-click">二级菜单3-2</a>
+                            <span class="custom_menu_arrow">
+                                <span class="custom_menu_down"></span>
+                                <span class="custom_menu_up"></span>
+                            </span>
+                        </div>
+                        <div class="preview-menu-one">
+                            <span class="glyphicon glyphicon-menu-hamburger"></span>
+                            一级菜单3
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="static/js/jquery.min.js"></script>
+    <script src="static/bootstrap/js/bootstrap.min.js"></script>
+    <script src="static/js/angular.min.js"></script>
+    <script src="static/js/index.js"></script>
+</body>
+</html>

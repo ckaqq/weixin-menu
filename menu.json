@@ -1,0 +1,53 @@
+{
+    "button": [
+        {
+            "name": "微校园",
+            "sub_button": [
+                {
+                    "type": "click",
+                    "name": "菜单Key",
+                    "key": "菜单Key"
+                },
+                {
+                    "type": "view",
+                    "name": "跳转网页",
+                    "url": "http://www.baidu.com"
+                },
+                {
+                    "type": "scancode_push",
+                    "name": "扫描事件",
+                    "key": "扫描事件"
+                },
+                {
+                    "type": "scancode_waitmsg",
+                    "name": "扫描弹框",
+                    "key": "微信"
+                },
+                {
+                    "type": "pic_sysphoto",
+                    "name": "拍照发图",
+                    "key": "拍照发图"
+                }
+            ]
+        },
+        {
+            "type": "pic_photo_or_album",
+            "name": "拍照相册",
+            "key": "拍照相册"
+        },
+        {
+            "name": "微个人",
+            "sub_button": [
+                {
+                    "type": "pic_weixin",
+                    "name": "相册发图"
+                },
+                {
+                    "type": "location_select",
+                    "name": "地理选择",
+                    "key": "地理选择"
+                }
+            ]
+        }
+    ]
+}
