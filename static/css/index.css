@@ -124,3 +124,37 @@ a:link,a:visited,a:hover,a:active {
     left: 0;
     bottom: 1px;
 }
+
+/* 正在编辑的 */
+.has-error {
+    border: 1px solid #ccc;
+    border-color: #a94442;
+    border-radius: 4px;
+}
+input:focus {
+    outline: none;
+} 
+.custom_menu_notice {
+    color: #da4a38;
+}
+.my-input{
+    width: 120px;
+}
+.container {
+    display: none;
+}
+.float-right {
+    float: right;
+}
+.pointer {
+    cursor: pointer;
+}
+.my-select {
+    float: right;
+    margin-top: -2px;
+    margin-right: 80px;
+    padding: 2px 12px;
+}
+.modal {
+    margin-top: 100px;
+}

@@ -14,40 +14,18 @@
       <script src="//cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-    <style type="text/css">
-        .has-error {
-            border: 1px solid #ccc;
-            border-color: #a94442;
-            border-radius: 4px;
-        }
-        input:focus {
-            outline: none;
-        } 
-        .custom_menu_notice {
-            color: #da4a38;
-        }
-        .input-1, .input-2 {
-            width: 120px;
-        }
-        .container {
-            display: none;
-        }
-        .float-right {
-            float: right;
-        }
-    </style>
 </head>
-<body>
+<body ng-controller="menu">
     <nav class="navbar navbar-default">
       <div class="container">
-            <a class="navbar-brand" href="#">自定义菜单</a>
+            <a class="navbar-brand" href="index.html">自定义菜单</a>
             <button type="button" class="btn btn-default btn-right">排序</button>
-            <button type="button" class="btn btn-default btn-right">+</button>
+            <button type="button" class="btn btn-default btn-right" ng-click="add()">新增</button>
       </div>
     </nav>
     <div class="container">
         <div class="row">
-            <div class="col-xs-12 col-sm-7" ng-controller="menu">
+            <div class="col-xs-12 col-sm-7">
                 <div>
                     可创建最多 3 个一级菜单，每个一级菜单下可创建最多 5 个二级菜单。编辑中的菜单不会马上被用户看到，请放心调试。
                 </div>
@@ -56,8 +34,8 @@
                         <span class="glyphicon glyphicon-triangle-bottom icon-head" ng-if="list.rank==1"></span>
                         <span class="menu-{{list.rank}}">
                             <span class="glyphicon glyphicon-plus" ng-if="list.rank==3"></span>
-                            <span ng-bind="list.name" ng-show="!checked[list.cnt]" ng-click="edit(list.cnt)"></span>
-                            <input class="input-{{list.rank}}" ng-class="{'has-error':has_error && checked[list.cnt]}" ng-model="list.name" type="text"  ng-keyup="myKeyup($event, list.cnt);" ng-blur="myBlur(list.cnt)" ng-if="list.rank!=3" ng-show="checked[list.cnt]">
+                            <span class="pointer" ng-bind="list.name" ng-show="!checked[list.cnt]" ng-click="edit(list.cnt)"></span>
+                            <input class="my-input input-{{list.cnt}}" ng-class="{'has-error':has_error && checked[list.cnt]}" ng-model="list.name" type="text"  ng-keyup="myKeyup($event, list.cnt);" ng-blur="myBlur(list.cnt)" ng-show="checked[list.cnt]">
                             <span class="glyphicon glyphicon-pencil clarity" ng-if="list.rank!=3" ng-click="edit(list.cnt)"></span>
                             <span class="custom_menu_notice hidden-xs" ng-if="list.rank==1" ng-show="has_error && checked[list.cnt]">
                                 一级菜单名称不多于4个汉字或8个字母
@@ -66,7 +44,10 @@
                                 二级菜单名称不多于8个汉字或16个字母
                             </span>
                             <span class="glyphicon glyphicon-trash clarity trash" ng-if="list.rank!=3" ng-click="del(list.cnt)"></span>
-                            <span class="label label-default trash" ng-if="list.type" ng-bind="typeArray[list.type]"></span>
+                            <span class="label label-default trash" ng-if="list.type" ng-bind="typeArray[list.type].name"></span>
+                            <select class="my-select" ng-if="list.unselect" ng-change="select(list.cnt ,x)" ng-model="x">
+                                <option ng-repeat="item in typeArray" ng-bind="item.name" value="{{item.type}}"></option>
+                            </select>
                         </span>
                     </li>
                 </ul>
@@ -114,10 +95,30 @@
                 </div>
             </div>
         </div>
+    </div><!-- .container -->
+
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">设置菜单KEY值</h4>
+                </div>
+                <div class="modal-body">
+                    <input type="text" class="form-control" id="myModalInput">
+                    <br/>
+                    菜单KEY值，用于消息接口推送，不超过64个字
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">完成</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
     </div>
+
+</body>
     <script src="static/js/jquery.min.js"></script>
     <script src="static/bootstrap/js/bootstrap.min.js"></script>
     <script src="static/js/angular.min.js"></script>
     <script src="static/js/index.js"></script>
-</body>
 </html>
