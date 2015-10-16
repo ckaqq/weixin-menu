@@ -15,8 +15,25 @@
       <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
     <style type="text/css">
-        .menu-input {
+        .has-error {
+            border: 1px solid #ccc;
+            border-color: #a94442;
+            border-radius: 4px;
+        }
+        input:focus {
+            outline: none;
+        } 
+        .custom_menu_notice {
+            color: #da4a38;
+        }
+        .input-1, .input-2 {
+            width: 120px;
+        }
+        .container {
             display: none;
+        }
+        .float-right {
+            float: right;
         }
     </style>
 </head>
@@ -26,26 +43,36 @@
             <a class="navbar-brand" href="#">自定义菜单</a>
             <button type="button" class="btn btn-default btn-right">排序</button>
             <button type="button" class="btn btn-default btn-right">+</button>
-      </div><!-- /.container-fluid -->
+      </div>
     </nav>
     <div class="container">
         <div class="row">
             <div class="col-xs-12 col-sm-7" ng-controller="menu">
+                <div>
+                    可创建最多 3 个一级菜单，每个一级菜单下可创建最多 5 个二级菜单。编辑中的菜单不会马上被用户看到，请放心调试。
+                </div>
                 <ul class="list-group">
                     <li class="list-group-item" ng-repeat="list in lists">
-                        <span class="glyphicon glyphicon-triangle-bottom icon-head" ng-if="list.rank == 1"></span>
+                        <span class="glyphicon glyphicon-triangle-bottom icon-head" ng-if="list.rank==1"></span>
                         <span class="menu-{{list.rank}}">
-                            <span class="glyphicon glyphicon-plus" ng-if="list.rank == 3"></span>
-                            <span ng-bind="list.name"></span>
-                            <input class="menu-input" type="text" autofocus="true" value="{{list.name}}" ng-blur="">
-                            <span class="glyphicon glyphicon-pencil clarity" ng-if="list.rank != 3"></span>
-                            <span class="glyphicon glyphicon-trash clarity trash" ng-if="list.rank != 3" ng-click="del()"></span>
+                            <span class="glyphicon glyphicon-plus" ng-if="list.rank==3"></span>
+                            <span ng-bind="list.name" ng-show="!checked[list.cnt]" ng-click="edit(list.cnt)"></span>
+                            <input class="input-{{list.rank}}" ng-class="{'has-error':has_error && checked[list.cnt]}" ng-model="list.name" type="text"  ng-keyup="myKeyup($event, list.cnt);" ng-blur="myBlur(list.cnt)" ng-if="list.rank!=3" ng-show="checked[list.cnt]">
+                            <span class="glyphicon glyphicon-pencil clarity" ng-if="list.rank!=3" ng-click="edit(list.cnt)"></span>
+                            <span class="custom_menu_notice hidden-xs" ng-if="list.rank==1" ng-show="has_error && checked[list.cnt]">
+                                一级菜单名称不多于4个汉字或8个字母
+                            </span>
+                            <span class="custom_menu_notice hidden-xs" ng-if="list.rank==2" ng-show="has_error && checked[list.cnt]">
+                                二级菜单名称不多于8个汉字或16个字母
+                            </span>
+                            <span class="glyphicon glyphicon-trash clarity trash" ng-if="list.rank!=3" ng-click="del(list.cnt)"></span>
                             <span class="label label-default trash" ng-if="list.type" ng-bind="typeArray[list.type]"></span>
                         </span>
                     </li>
                 </ul>
                 <button type="button" class="btn btn-primary" disabled="disabled">保存</button>
                 <button type="button" class="btn btn-primary">发布</button>
+                <span class="float-right">发布后24小时内所有用户都将更新到新的菜单</span>
             </div>
 
             <div class="col-xs-12 col-sm-5 hidden-xs" ng-controller="preview">
