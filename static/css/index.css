@@ -45,7 +45,7 @@ a:link,a:visited,a:hover,a:active {
 }
 .preview-title {
     margin-top: 10px;
-    padding-top: 10px;
+    padding-top: 30px;
 }
 .preview-menu {
     position: absolute;
@@ -157,4 +157,14 @@ input:focus {
 }
 .modal {
     margin-top: 100px;
+}
+.form_info_block {
+    color: #da4a38;
+}
+.modal-body {
+    padding: 50px;
+}
+.node {
+    margin-top: 30px;
+    color: gray;
 }

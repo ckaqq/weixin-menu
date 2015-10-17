@@ -35,7 +35,7 @@
                         <span class="menu-{{list.rank}}">
                             <span class="glyphicon glyphicon-plus" ng-if="list.rank==3"></span>
                             <span class="pointer" ng-bind="list.name" ng-show="!checked[list.cnt]" ng-click="edit(list.cnt)"></span>
-                            <input class="my-input input-{{list.cnt}}" ng-class="{'has-error':has_error && checked[list.cnt]}" ng-model="list.name" type="text"  ng-keyup="myKeyup($event, list.cnt);" ng-blur="myBlur(list.cnt)" ng-show="checked[list.cnt]">
+                            <input class="my-input input-{{list.cnt}}" ng-class="{'has-error':has_error && checked[list.cnt]}" ng-model="list.name" type="text" ng-keyup="myKeyup($event, list.cnt);" ng-blur="myBlur(list.cnt)" ng-show="checked[list.cnt]">
                             <span class="glyphicon glyphicon-pencil clarity" ng-if="list.rank!=3" ng-click="edit(list.cnt)"></span>
                             <span class="custom_menu_notice hidden-xs" ng-if="list.rank==1" ng-show="has_error && checked[list.cnt]">
                                 一级菜单名称不多于4个汉字或8个字母
@@ -44,73 +44,59 @@
                                 二级菜单名称不多于8个汉字或16个字母
                             </span>
                             <span class="glyphicon glyphicon-trash clarity trash" ng-if="list.rank!=3" ng-click="del(list.cnt)"></span>
-                            <span class="label label-default trash" ng-if="list.type" ng-bind="typeArray[list.type].name"></span>
+                            <span class="label label-default trash" ng-if="list.type" ng-bind="typeArray[list.type].name" ng-click="select(list.cnt, list.type)"></span>
                             <select class="my-select" ng-if="list.unselect" ng-change="select(list.cnt ,x)" ng-model="x">
                                 <option ng-repeat="item in typeArray" ng-bind="item.name" value="{{item.type}}"></option>
                             </select>
                         </span>
                     </li>
                 </ul>
-                <button type="button" class="btn btn-primary" disabled="disabled">保存</button>
-                <button type="button" class="btn btn-primary">发布</button>
+                <button type="button" class="btn btn-primary" ng-click="preview()">预览</button>
+                <button type="button" class="btn btn-primary" disabled="disabled" ng-click="publish()">发布</button>
                 <span class="float-right">发布后24小时内所有用户都将更新到新的菜单</span>
             </div>
 
-            <div class="col-xs-12 col-sm-5 hidden-xs" ng-controller="preview">
+            <div class="col-xs-12 col-sm-5 hidden-xs">
                 <div class="preview">
                     <div class="center preview-title">预览</div>
                     <div class="preview-menu">
-                        <div class="preview-menu-two preview-menu-float-1">
-                            <a class="preview-menu-click">二级菜单1-1</a>
-                            <a class="preview-menu-click">二级菜单1-2</a>
-                            <a class="preview-menu-click">二级菜单1-3</a>
+                        <div class="preview-menu-one" ng-repeat="menu in menus" ng-click="menuClick($index, -1);">
+                            <span class="glyphicon glyphicon-menu-hamburger" ng-if="menu.sub_button && menu.sub_button.length!=0"></span>
+                            <span ng-bind="menu.name"></span>
+                        </div>
+                        <div class="preview-menu-two preview-menu-float-{{$index + 1}}" ng-repeat="menu in menus" ng-show="menuShow[$index]">
+                            <span class="preview-menu-click" ng-repeat="item in menu.sub_button" ng-bind="item.name"></span>
                             <span class="custom_menu_arrow">
                                 <span class="custom_menu_down"></span>
                                 <span class="custom_menu_up"></span>
                             </span>
                         </div>
-                        <div class="preview-menu-one">
-                            <span class="glyphicon glyphicon-menu-hamburger"></span>
-                            一级菜单1
-                        </div>
-
-                        <div class="preview-menu-one">
-                            一级菜单2
-                        </div>
-
-                        <div class="preview-menu-two preview-menu-float-3">
-                            <a class="preview-menu-click">二级菜单3-1</a>
-                            <a class="preview-menu-click">二级菜单3-2</a>
-                            <span class="custom_menu_arrow">
-                                <span class="custom_menu_down"></span>
-                                <span class="custom_menu_up"></span>
-                            </span>
-                        </div>
-                        <div class="preview-menu-one">
-                            <span class="glyphicon glyphicon-menu-hamburger"></span>
-                            一级菜单3
-                        </div>
-
                     </div>
                 </div>
             </div>
         </div>
     </div><!-- .container -->
 
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="myModalLabel">设置菜单KEY值</h4>
+                    <h4 class="modal-title" id="myModalLabel" ng-bind="editting.title">设置菜单KEY值</h4>
                 </div>
                 <div class="modal-body">
-                    <input type="text" class="form-control" id="myModalInput">
-                    <br/>
-                    菜单KEY值，用于消息接口推送，不超过64个字
+                    <input type="text" class="form-control" id="myModalInput" ng-class="{'has-error':modalError}" ng-keyup="modalKeyup($event);" ng-model="editting.key">
+                    <span class="form_info_block" ng-show="modalError">
+                        <label class="error">必须填写</label>
+                    </span>
+                    <p class="node" ng-bind="editting.note">菜单KEY值，用于消息接口推送，不超过64个字</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-dismiss="modal">完成</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" ng-click="modalFinish();">
+                        完成
+                    </button>
+                    <button type="button" class="btn btn-default" ng-click="modalCancel();">
+                        取消
+                    </button>
                 </div>
             </div>
         </div>
@@ -119,6 +105,7 @@
 </body>
     <script src="static/js/jquery.min.js"></script>
     <script src="static/bootstrap/js/bootstrap.min.js"></script>
+    <script src="static/js/jquery-ui.min.js"></script>
     <script src="static/js/angular.min.js"></script>
     <script src="static/js/index.js"></script>
 </html>

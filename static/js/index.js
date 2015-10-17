@@ -1,20 +1,6 @@
 (function(){
     
     var app = angular.module('weixin_menu', []);
-    
-    /*app.directive('setFocus', function(){
-        return function(scope, element){
-            alert("ok");
-            element[0].focus();
-        };
-    });*/
-    /*app.directive('focus', function () {
-        return function (scope, element, attrs) {
-            attrs.$observe('focus', function (newValue) {
-                newValue === 'true' && element[0].focus();
-            });
-        }
-    });*/
 
     function getLength(str) {
         return str.replace(/[^\x00-\xff]/g,"aa").length;
@@ -22,10 +8,69 @@
 
     // 菜单编辑
     app.controller('menu', function($scope, $http) {
+        $scope.back = {};
         $scope.checked = [];
-        $scope.back = [];
-        $scope.has_error = false;
         $scope.editting = {};
+        $scope.has_error = false;
+        $scope.lists = [];
+        $scope.menus = [];
+        $scope.menuShow = [];
+        $scope.modalError = false;
+        $scope.typeArray = {};
+
+        $scope.publish = function() {
+
+        }
+
+        function copyItem(item) {
+            var res = {
+                name: item.name,
+                sub_button: []
+            };
+            if (item.type) {
+                res.type = item.type;
+                if (item.type == "view") {
+                    res.url = item.key;
+                } else {
+                    res.key = item.key;
+                }
+            }
+            return res;
+        }
+
+        $scope.preview = function() {
+            var menu = [], cnt = -1, item, num;
+            for (var i = 0; i < $scope.lists.length; i++) {
+                if ($scope.lists[i].unselect == true) {
+                    alert("存在还未设置响应动作的菜单，请检查");
+                    return false;
+                }
+            }
+            for (var i = 0; i < $scope.lists.length; i++) {
+                item = $scope.lists[i];
+                if (item.rank == 3) {
+                    continue;
+                }
+                if (item.rank == 1) {
+                    num = 0;
+                    menu[++cnt] = copyItem(item);
+                } else {
+                    menu[cnt].sub_button[num++] = copyItem(item);
+                }
+            };
+            $scope.menuShow = [];
+            $scope.menus = menu;
+        }
+
+        $scope.menuClick = function(one, two) {
+            var open = $scope.menuShow[one];
+            $scope.menuShow = [];
+            if ($scope.menus[one].sub_button && $scope.menus[one].sub_button.length != 0) {
+                $scope.menuShow[one] = !open;
+            }
+        };
+
+        // 新增菜单
         $scope.add = function() {
             var cnt = 0;
             var len = $scope.lists.length;
@@ -54,33 +99,59 @@
             }
         }
 
-        $('#myModal').on('hidden.bs.modal', function (e) {
-            var key = $("#myModalInput").val();
+        // 模态框完成
+        $scope.modalFinish = function() {
+            var key = $scope.editting.key;
             var num = $scope.editting.num;
             var type = $scope.editting.type;
+
+            if (!key) {
+                $scope.modalError = true;
+                return false;
+            }
+
             $scope.lists[num].unselect = false;
             $scope.lists[num].type = type;
             $scope.lists[num].key = key;
-            $scope.$digest();
-            return false;
-        });
-        $('#myModal').on('shown.bs.modal', function () {
-            $('#myModalInput').focus()
-        })
+            $('#myModal').modal('hide');
+        };
+
+        // 模态框取消
+        $scope.modalCancel = function() {
+            var key = $scope.back.modal;
+            if (key) {
+                $scope.editting.key = key;
+            }
+            $scope.modalFinish();
+        };
+
+        $scope.modalKeyup = function(e){
+            $scope.modalError = false;
+            var keycode = window.event ? e.keyCode : e.which;
+            if(keycode == 13) {
+                $('#myModalInput').blur();
+                $scope.modalFinish();
+            }
+        };
+        // 打开模态框
         $scope.select = function(num, type) {
+            var key = $scope.lists[num].key;
+            $scope.back.modal = key;
             $scope.editting = {
                 num: num,
-                type: type
+                type: type,
+                key: key,
+                title: type=="view" ? '设置菜单跳转链接' : '设置菜单KEY值',
+                note: type=="view" ? "点击该菜单会跳到以上链接" : "菜单KEY值，用于消息接口推送，不超过64个字"
             };
-            var text = type=="view" ? '设置菜单跳转链接' : '设置菜单KEY值';
-            $("#myModalInput").val('');
-            $("#myModalLabel").text(text);
             $("#myModal").modal({
                 backdrop: 'static',
                 keyboard: false
             });
+            $('#myModalInput').focus();
         };
 
+        // 删除列表
         $scope.del = function(num) {
             var lists = [], cnt = 0, flag = false;
             var rank = $scope.lists[num].rank;
@@ -109,6 +180,8 @@
             //console.log(lists);
             $scope.lists = lists;
         };
+
+        // 输入框失去焦点
         $scope.myBlur = function(num) {
             var name = $scope.lists[num].name.trim();
             var rank = $scope.lists[num].rank;
@@ -143,6 +216,8 @@
             }
             $scope.back[num] = {};
         }
+
+        // 编辑输入框
         $scope.edit = function(num) {
             $scope.back[num] = {};
             $scope.back[num].name = $scope.lists[num].name;
@@ -153,6 +228,7 @@
                     if (!confirm("确认使用二级菜单？\n使用二级菜单后，当前编辑的消息将会被清除。")) {
                         return false;
                     }
+                    $scope.lists[num-1].unselect = false;
                     $scope.lists[num-1].type = '';
                     $scope.lists[num-1].key = '';
                 } else {
@@ -172,6 +248,8 @@
             $scope.checked[num] = true;
             setTimeout(function(){$(".input-" + num).focus();}, 50);
         };
+
+        // 输入过程
         $scope.myKeyup = function(e, num){
             var name = $scope.lists[num].name.trim();
             var rank = $scope.lists[num].rank;
@@ -185,13 +263,17 @@
                 $scope.myBlur(num);
             }
         };
+
+        // 生成列表
         $http({
             url:'menu.json',
             method:'GET'
         }).success(function(res) {
             var lists = [], cnt = 0;
-            for (var i = 0; i < res['button'].length; i++) {
-                var menu = res['button'][i];
+            // 将数组的层数将为一层
+            $scope.menus = res['button'];
+            for (var i = 0; i < $scope.menus.length; i++) {
+                var menu = $scope.menus[i];
                 lists[cnt] = {
                     rank: 1
                 }
@@ -217,7 +299,13 @@
                 };
                 cnt++;
             };
-            //console.log(lists);
+            // 再次处理特殊情况
+            for (var i = 0; i < lists.length; i++) {
+                if(lists[i].url) {
+                    lists[i].key = lists[i].url;
+                }
+            };
+            //console.log($scope.menu);
             $scope.lists = lists;
             $scope.typeArray = {
                 click: {
@@ -256,10 +344,6 @@
         });
     });
 
-    // 预览
-    app.controller('preview', function($scope) {
-
-    });
-
     $(".container").show();
+    //$(".list-group").sortable().disableSelection();
 })();
