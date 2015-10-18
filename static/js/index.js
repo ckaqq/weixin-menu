@@ -1,5 +1,18 @@
 (function(){
-    
+    var config = {
+        get: {
+            url: "menu.json",
+            method: "get",
+        },
+        save: {
+            url: "menu.json",
+            method: "post",
+        },
+        publish: {
+            url: "menu.json",
+            method: "get",
+        }
+    };
     var app = angular.module('weixin_menu', []);
 
     function getLength(str) {
@@ -13,32 +26,48 @@
         $scope.editting = {};
         $scope.has_error = false;
         $scope.lists = [];
+        $scope.menuCnt = 1;
         $scope.menus = [];
         $scope.menuShow = [];
         $scope.modalError = false;
-        $scope.typeArray = {};
+        $scope.sortable = false;
+        $scope.typeArray = {
+            click: "菜单Key",
+            view: "跳转网页",
+            scancode_push: "扫描事件",
+            scancode_waitmsg: "扫描弹框",
+            pic_sysphoto: "拍照发图",
+            pic_photo_or_album: "拍照相册",
+            pic_weixin: "相册发图",
+            location_select: "地理选择"
+        };
+        
+        // 更新列表的 cnt 和 position
+        function update(lists) {
+            var position = 0;
+            for (var i = 0; i < lists.length; i++) {
+                lists[i].cnt = i;
+                if (i != 0 && lists[i].rank == 1) {
+                    position++;
+                }
+                lists[i].position = position;
+            };
+        }
+
 
         $scope.publish = function() {
+            $http({
+                url: config.publish.url,
+                method: config.publish.method
+            }).success(function(res){
+                alert(res);
+            }).error(function(){
+                alert("保存失败");
+            });
+        };
 
-        }
-
-        function copyItem(item) {
-            var res = {
-                name: item.name,
-                sub_button: []
-            };
-            if (item.type) {
-                res.type = item.type;
-                if (item.type == "view") {
-                    res.url = item.key;
-                } else {
-                    res.key = item.key;
-                }
-            }
-            return res;
-        }
-
-        $scope.preview = function() {
+        // 保存
+        $scope.save = function() {
             var menu = [], cnt = -1, item, num;
             for (var i = 0; i < $scope.lists.length; i++) {
                 if ($scope.lists[i].unselect == true) {
@@ -58,16 +87,76 @@
                     menu[cnt].sub_button[num++] = copyItem(item);
                 }
             };
-            $scope.menuShow = [];
-            $scope.menus = menu;
+            //console.log(menu);
+            $http({
+                url: config.save.url,
+                method: config.save.method,
+                data: {
+                    button: menu
+                }
+            }).success(function(res){
+                alert(res);
+            }).error(function(){
+                alert("保存失败");
+            });
+        };
+
+        // 取消排序
+        $scope.cancelSort = function() {
+            $(".dd-list").sortable('cancel');
+            $scope.sortable = false;
+        };
+
+        // 排序
+        $scope.sort = function() {
+            var que = [], num = 0, lists = [], id;
+            var obj = $(".dd-handle");
+            for (var i = 0; i < obj.length; i++) {
+                id = $(obj[i]).attr("data-id");
+                if (i != 0 && $scope.lists[id].rank == 1) {
+                    lists[num++] = {
+                        name: "添加二级菜单",
+                        rank: 3
+                    }
+                }
+                lists[num++] = $scope.lists[id];
+            };
+            lists[num] = {
+                name: "添加二级菜单",
+                rank: 3
+            }
+
+            // 更新列表的 cnt 和 position
+            update(lists);
+
+            $scope.lists = lists;
+            $scope.sortable = false;
+        };
+
+        // 转换
+        function copyItem(item) {
+            var res = {
+                name: item.name
+            };
+            if (item.rank == 1) {
+                res.sub_button = [];
+            }
+            if (item.type) {
+                res.type = item.type;
+                if (item.type == "view") {
+                    res.url = item.key;
+                } else {
+                    res.key = item.key;
+                }
+            }
+            return res;
         }
 
-        $scope.menuClick = function(one, two) {
-            var open = $scope.menuShow[one];
+        // 点击菜单
+        $scope.menuClick = function(num) {
+            var open = $scope.menuShow[num];
             $scope.menuShow = [];
-            if ($scope.menus[one].sub_button && $scope.menus[one].sub_button.length != 0) {
-                $scope.menuShow[one] = !open;
-            }
+            $scope.menuShow[num] = !open;
         };
 
         // 新增菜单
@@ -82,12 +171,14 @@
             if (cnt >= 3) {
                 alert("一级菜单最多创建3个");
             } else {
+                $scope.menuCnt++;
                 $scope.lists.push(
                     {
                         name: "",
                         rank: 1,
                         unselect: true,
-                        cnt: len
+                        cnt: len,
+                        position: $scope.menuCnt
                     },
                     {
                         name: "添加二级菜单",
@@ -135,6 +226,7 @@
         };
         // 打开模态框
         $scope.select = function(num, type) {
+            //console.log(type);
             var key = $scope.lists[num].key;
             $scope.back.modal = key;
             $scope.editting = {
@@ -155,14 +247,16 @@
         $scope.del = function(num) {
             var lists = [], cnt = 0, flag = false;
             var rank = $scope.lists[num].rank;
-            if(rank == 2) {
-                if ($scope.lists[num-1].rank == 1) {
-                    if (!$scope.lists[num+2] || $scope.lists[num+2].rank == 1) {
-                        $scope.lists[num-1].unselect = true;
-                        $scope.lists[num-1].key = '';
-                    }
+
+            // 判断是否为二级菜单的最后一个
+            if(rank == 2 && $scope.lists[num-1].rank == 1) {
+                if (!$scope.lists[num+2] || $scope.lists[num+2].rank == 1) {
+                    $scope.lists[num-1].unselect = true;
+                    $scope.lists[num-1].key = '';
                 }
             }
+
+            // 进行删除
             for (var i = 0; i < $scope.lists.length; i++) {
                 if (i != num) {
                     if (rank==1 && flag && $scope.lists[i]['rank']!=1) {
@@ -174,9 +268,16 @@
                     flag = true;
                 }
             };
-            for (var i = 0; i < lists.length; i++) {
-                lists[i].cnt = i;
-            };
+            
+            // 更新列表的 cnt 和 position
+            update(lists);
+
+            // 更新一级菜单数量
+            if(rank == 1) {
+                $scope.menuCnt--;
+            }
+
+            $scope.menuShow = [];
             //console.log(lists);
             $scope.lists = lists;
         };
@@ -198,20 +299,22 @@
             }
             if ($scope.back[num].rank == 3) {
                 $scope.lists[num].unselect = true;
+                $scope.lists[num].position = $scope.lists[num-1].position;
+                // 新增添加二级菜单一栏
                 var lists = [], cnt = 0;
                 for (var i = 0; i < $scope.lists.length; i++) {
                     lists[cnt] = $scope.lists[i];
-                    lists[cnt].cnt = cnt;
                     cnt++;
                     if (num == i) {
                         lists[cnt] = {
                             name: "添加二级菜单",
-                            rank: 3,
-                            cnt: cnt
+                            rank: 3
                         };
                         cnt++;
                     }
                 };
+                // 更新列表的 cnt 和 position
+                update(lists);
                 $scope.lists = lists;
             }
             $scope.back[num] = {};
@@ -266,14 +369,21 @@
 
         // 生成列表
         $http({
-            url:'menu.json',
-            method:'GET'
+            url: config.get.url,
+            method: config.get.method
         }).success(function(res) {
-            var lists = [], cnt = 0;
+            var lists = [], cnt = 0, menus = [];
+            
+            menus = res['menu'] ? res['menu']['button'] : res['button'];
+            
+            // 一级菜单个数初始化
+            $scope.menuCnt = menus.length;
+
             // 将数组的层数将为一层
-            $scope.menus = res['button'];
-            for (var i = 0; i < $scope.menus.length; i++) {
-                var menu = $scope.menus[i];
+            for (var i = 0; i < menus.length; i++) {
+                var menu = menus[i];
+
+                // 一级菜单
                 lists[cnt] = {
                     rank: 1
                 }
@@ -282,13 +392,17 @@
                         lists[cnt][key] = menu[key];
                     }
                 }
-                lists[cnt]['cnt'] = cnt;
+                lists[cnt].cnt = cnt;
+                lists[cnt].position = i;
                 cnt++;
+
+                // 二级菜单
                 if (menu["sub_button"]) {
                     for (var j = 0; j < menu['sub_button'].length; j++) {
                         lists[cnt] = menu['sub_button'][j];
                         lists[cnt]['rank'] = 2;
                         lists[cnt]['cnt'] = cnt;
+                        lists[cnt]['position'] = i;
                         cnt++;
                     };
                 }
@@ -307,43 +421,11 @@
             };
             //console.log($scope.menu);
             $scope.lists = lists;
-            $scope.typeArray = {
-                click: {
-                    name: "菜单Key",
-                    type: "click"
-                },
-                view: {
-                    name: "跳转网页",
-                    type: "view"
-                },
-                scancode_push: {
-                    name: "扫描事件",
-                    type: "scancode_push"
-                },
-                scancode_waitmsg: {
-                    name: "扫描弹框",
-                    type: "scancode_waitmsg"
-                },
-                pic_sysphoto: {
-                    name: "拍照发图",
-                    type: "pic_sysphoto"
-                },
-                pic_photo_or_album: {
-                    name: "拍照相册",
-                    type: "pic_photo_or_album"
-                },
-                pic_weixin: {
-                    name: "相册发图",
-                    type: "pic_weixin"
-                },
-                location_select: {
-                    name: "地理选择",
-                    type: "location_select"
-                }
-            };
+            setTimeout(function(){
+                $(".dd-list").sortable().disableSelection();
+            },500);
         });
     });
 
     $(".container").show();
-    //$(".list-group").sortable().disableSelection();
 })();

@@ -64,8 +64,8 @@ a:link,a:visited,a:hover,a:active {
     text-overflow: ellipsis;
     white-space: nowrap;
     float: left;
-    height: 32px;
-    padding-top: 8px;
+    height: 40px;
+    padding-top: 10px;
 }
 .preview-menu-two {
     position: absolute;
@@ -78,6 +78,15 @@ a:link,a:visited,a:hover,a:active {
     background-color: #f1f1f1;
     text-align: center;
 }
+.preview-menu-has-3 {
+    width: 32%;
+}
+.preview-menu-has-2 {
+    width: 50%;
+}
+.preview-menu-has-1 {
+    width: 100%;
+}
 .preview-menu-click {
     display: block;
     color: #242424;
@@ -85,14 +94,17 @@ a:link,a:visited,a:hover,a:active {
     border-top: 1px solid #ccc;
     cursor: pointer;
 }
-.preview-menu-float-1 {
+.preview-menu-float-3-1 {
     left: 35px;
 }
-.preview-menu-float-2 {
-    left: 128px;
-}
-.preview-menu-float-3 {
+.preview-menu-float-3-3 {
     left: 200px;
+}
+.preview-menu-float-2-2 {
+    left: 200px;
+}
+.preview-menu-float-2-1 {
+    left: 65px;
 }
 .custom_menu_arrow {
     display: inline-block;
@@ -167,4 +179,42 @@ input:focus {
 .node {
     margin-top: 30px;
     color: gray;
+}
+
+
+.dd-list {
+    display: block;
+    position: relative;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.dd-item {
+    display: block;
+    position: relative;
+    margin: 0;
+    padding: 0;
+    min-height: 20px;
+    line-height: 28px;
+}
+.dd-handle {
+    display: block;
+    margin: 0;
+    padding: 5px 10px;
+    color: #333;
+    text-decoration: none;
+    border: 1px solid #e5e5e5;
+    background: #fff;
+    margin-bottom: -1px;
+}
+.dd-two {
+    padding-left: 18px;
+}
+.dd {
+    margin-top: 12px;
+}
+
+.sort {
+    float: right;
+    margin-top: 5px;
 }

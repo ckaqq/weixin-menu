@@ -19,8 +19,10 @@
     <nav class="navbar navbar-default">
       <div class="container">
             <a class="navbar-brand" href="index.html">自定义菜单</a>
-            <button type="button" class="btn btn-default btn-right">排序</button>
-            <button type="button" class="btn btn-default btn-right" ng-click="add()">新增</button>
+            <button type="button" class="btn btn-default btn-right" ng-click="sortable=true;" ng-show="!sortable">排序</button>
+            <button type="button" class="btn btn-default btn-right" ng-click="cancelSort()" ng-show="sortable">取消</button>
+            <button type="button" class="btn btn-default btn-right" ng-click="add()" ng-show="!sortable">新增</button>
+            <button type="button" class="btn btn-default btn-right" ng-click="sort()" ng-show="sortable">完成</button>
       </div>
     </nav>
     <div class="container">
@@ -29,7 +31,7 @@
                 <div>
                     可创建最多 3 个一级菜单，每个一级菜单下可创建最多 5 个二级菜单。编辑中的菜单不会马上被用户看到，请放心调试。
                 </div>
-                <ul class="list-group">
+                <ul class="list-group" ng-show="!sortable">
                     <li class="list-group-item" ng-repeat="list in lists">
                         <span class="glyphicon glyphicon-triangle-bottom icon-head" ng-if="list.rank==1"></span>
                         <span class="menu-{{list.rank}}">
@@ -44,32 +46,52 @@
                                 二级菜单名称不多于8个汉字或16个字母
                             </span>
                             <span class="glyphicon glyphicon-trash clarity trash" ng-if="list.rank!=3" ng-click="del(list.cnt)"></span>
-                            <span class="label label-default trash" ng-if="list.type" ng-bind="typeArray[list.type].name" ng-click="select(list.cnt, list.type)"></span>
+                            <span class="label label-default trash" ng-if="list.type" ng-bind="typeArray[list.type]" ng-click="select(list.cnt, list.type)"></span>
                             <select class="my-select" ng-if="list.unselect" ng-change="select(list.cnt ,x)" ng-model="x">
-                                <option ng-repeat="item in typeArray" ng-bind="item.name" value="{{item.type}}"></option>
+                                <option ng-repeat="(k,v) in typeArray" ng-bind="v" value="{{k}}"></option>
                             </select>
                         </span>
                     </li>
                 </ul>
-                <button type="button" class="btn btn-primary" ng-click="preview()">预览</button>
-                <button type="button" class="btn btn-primary" disabled="disabled" ng-click="publish()">发布</button>
-                <span class="float-right">发布后24小时内所有用户都将更新到新的菜单</span>
+
+                <ul class="dd dd-list" ng-show="sortable">
+                    <li class="dd-item" ng-repeat="list in lists" ng-if="list.rank==1">
+                        <div class="dd-handle" data-id="{{list.cnt}}">
+                            <span class="glyphicon glyphicon-triangle-bottom icon-head"></span>
+                            <span class="" ng-bind="list.name"></span>
+                            <span class="glyphicon glyphicon-menu-hamburger sort"></span>
+                        </div>
+                        <ul class="dd-list">
+                            <li class="dd-item" ng-repeat="item in lists" ng-if="item.rank ==2 && list.position==item.position">
+                                <div class="dd-handle" data-id="{{item.cnt}}">
+                                    <span class="dd-two" ng-bind="item.name"></span>
+                                    <span class="glyphicon glyphicon-menu-hamburger sort"></span>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+                <button type="button" class="btn btn-primary" ng-click="save()" ng-show="!sortable">保存</button>
+                <button type="button" class="btn btn-primary" ng-click="publish()" ng-show="!sortable">发布</button>
+                <span class="float-right" ng-show="!sortable">发布后24小时内所有用户都将更新到新的菜单</span>
             </div>
 
             <div class="col-xs-12 col-sm-5 hidden-xs">
                 <div class="preview">
                     <div class="center preview-title">预览</div>
                     <div class="preview-menu">
-                        <div class="preview-menu-one" ng-repeat="menu in menus" ng-click="menuClick($index, -1);">
-                            <span class="glyphicon glyphicon-menu-hamburger" ng-if="menu.sub_button && menu.sub_button.length!=0"></span>
-                            <span ng-bind="menu.name"></span>
-                        </div>
-                        <div class="preview-menu-two preview-menu-float-{{$index + 1}}" ng-repeat="menu in menus" ng-show="menuShow[$index]">
-                            <span class="preview-menu-click" ng-repeat="item in menu.sub_button" ng-bind="item.name"></span>
-                            <span class="custom_menu_arrow">
-                                <span class="custom_menu_down"></span>
-                                <span class="custom_menu_up"></span>
-                            </span>
+                        <div ng-repeat="list in lists" ng-if="list.rank==1">
+                            <div class="preview-menu-one preview-menu-has-{{menuCnt}}" ng-click="menuClick(list.position);">
+                                <span class="glyphicon glyphicon-menu-hamburger" ng-if="lists[$index+1] && lists[$index+1].rank==2"></span>
+                                <span ng-bind="list.name"></span>
+                            </div>
+                            <div class="preview-menu-two preview-menu-float-{{menuCnt}}-{{list.position+1}}" ng-if="lists[$index+1] && lists[$index+1].rank==2" ng-show="menuShow[list.position]">
+                                <span class="preview-menu-click" ng-repeat="item in lists" ng-if="item.rank==2 && list.position==item.position" ng-bind="item.name"></span>
+                                <span class="custom_menu_arrow">
+                                    <span class="custom_menu_down"></span>
+                                    <span class="custom_menu_up"></span>
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
